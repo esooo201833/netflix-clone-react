@@ -3,6 +3,7 @@ import { FaSearch, FaBell, FaUser, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useGenres } from '../hooks/useGenres';
+import { useAuth } from '../context/AuthContext';
 
 function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -13,6 +14,7 @@ function Header() {
   
   const { t, toggleLang, lang } = useLanguage();
   const { genres } = useGenres(lang);
+  const { user, logout } = useAuth();
   const nav = useNavigate();
 
   const [notifications, setNotifications] = useState([
@@ -70,7 +72,7 @@ function Header() {
             
             <div className="relative">
               <button onMouseEnter={() => setShowGenres(true)} className="text-sm text-gray-300 hover:text-white flex items-center gap-1 py-2 border-b-2 border-transparent hover:border-blue-500 transition">
-                {t('movies')} <span className="text-xs">▼</span>
+                {t('movies')} <span className="text-xs transition-transform group-hover:rotate-180">▼</span>
               </button>
               {showGenres && (
                 <div onMouseLeave={() => setShowGenres(false)} className="absolute top-full left-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded shadow-xl py-2 max-h-96 overflow-auto">
@@ -150,9 +152,24 @@ function Header() {
             )}
           </div>
 
-          <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center cursor-pointer">
-            <FaUser className="text-white text-sm" />
-          </div>
+          {user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-white text-sm hidden md:block">{user.name}</span>
+              <button 
+                onClick={logout}
+                className="text-sm text-gray-300 hover:text-white"
+              >
+                {lang === 'ar' ? 'خروج' : 'Logout'}
+              </button>
+            </div>
+          ) : (
+            <button 
+              onClick={() => nav('/login')}
+              className="text-white hover:text-blue-400 font-bold"
+            >
+              {lang === 'ar' ? 'دخول' : 'Login'}
+            </button>
+          )}
         </div>
       </div>
     </header>
